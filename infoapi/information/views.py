@@ -1,27 +1,37 @@
-from django.shortcuts import render
+import json
+import datetime
 from django.http import JsonResponse
-from datetime import datetime
-import pytz
+from django.views.decorators.http import require_http_methods
 
 
-# Create your views here.
-
+@require_http_methods(["GET"])
 def get_info(request):
-    slack_name = request.GET.get('slack_name', 'Unknown')
-    current_day = datetime.now(pytz.utc).strftime('%A')
-    current_utc_time = datetime.now(pytz.utc).strftime('%Y-%m-%d %H:%M:%S %Z')
-    track = request.GET.get('track', 'Unknown')
-    github_file_url = 'https://github.com/yourusername/yourrepository/blob/master/path/to/your/file.py'
-    github_source_code_url = 'https://github.com/yourusername/yourrepository'
+    slack_name = request.GET.get('slack_name')
+    track = request.GET.get('track')
+
+    if not slack_name or not track:
+        return JsonResponse({'error': 'Both slack_name and track parameters are required.'}, status=400)
+
+    current_day_of_week = datetime.datetime.now().strftime("%A")
+    current_utc_time = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+
+    # Validate UTC time within +/-2 hours
+    utc_time = datetime.datetime.strptime(
+        current_utc_time, "%Y-%m-%d %H:%M:%S")
+    now = datetime.datetime.utcnow()
+    if abs((utc_time - now).total_seconds()) > 7200:
+        return JsonResponse({'error': 'UTC time validation failed.'}, status=400)
+
+    github_url_file = 'https://github.com/yourusername/yourrepo/blob/main/yourfile.py'
+    github_url_source = 'https://github.com/yourusername/yourrepo'
 
     response_data = {
         'slack_name': slack_name,
-        'current_day': current_day,
+        'current_day_of_week': current_day_of_week,
         'current_utc_time': current_utc_time,
         'track': track,
-        'github_file_url': github_file_url,
-        'github_source_code_url': github_source_code_url,
-        'status_code': 'Success'
+        'github_url_file': github_url_file,
+        'github_url_source': github_url_source,
     }
 
-    return JsonResponse(response_data)
+    return JsonResponse(response_data, status=200)
