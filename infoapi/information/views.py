@@ -25,7 +25,7 @@ def get_info(request):
         return JsonResponse({'error': 'UTC time validation failed.'}, status=400)
 
     github_url_file = 'https://github.com/yourusername/yourrepo/blob/main/yourfile.py'
-    github_url_source = 'https://github.com/yourusername/yourrepo'
+    github_url_source = 'https://github.com//Thaiwhoe/HNG-Internship-Backend'
 
     response_data = {
         'slack_name': slack_name,
