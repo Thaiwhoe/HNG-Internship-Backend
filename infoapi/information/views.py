@@ -27,11 +27,11 @@ def get_info(request):
 
     response_data = {
         'slack_name': slack_name,
-        'current_day_of_week': current_day_of_week,
-        'current_utc_time': current_utc_time,
+        'current_day': current_day_of_week,
+        'utc_time': current_utc_time,
         'track': track,
-        'github_url_file': github_url_file,
-        'github_url_source': github_url_source,
+        'github_file_url': github_url_file,
+        'github_repo_url': github_url_source,
     }
 
     return JsonResponse(response_data, status=200)
