@@ -13,11 +13,13 @@ def get_info(request):
         return JsonResponse({'error': 'Both slack_name and track parameters are required.'}, status=400)
 
     current_day_of_week = datetime.datetime.now().strftime("%A")
-    current_utc_time = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+
+    # Get the current UTC time in the specified format
+    current_utc_time = datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
 
     # Validate UTC time within +/-2 hours
     utc_time = datetime.datetime.strptime(
-        current_utc_time, "%Y-%m-%d %H:%M:%S")
+        current_utc_time, "%Y-%m-%dT%H:%M:%SZ")
     now = datetime.datetime.utcnow()
     if abs((utc_time - now).total_seconds()) > 7200:
         return JsonResponse({'error': 'UTC time validation failed.'}, status=400)
